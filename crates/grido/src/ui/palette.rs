@@ -51,9 +51,9 @@ impl GridoApp {
         let mut lines: Vec<(Choice, Action)> = Command::ALL
             .into_iter()
             .filter(|&cmd| self.applies(cmd))
-            .map(|cmd| (Choice { label: cmd.label().to_string(), key: self.key_of(cmd) }, Action::Run(cmd)))
+            .map(|cmd| (Choice { label: cmd.label().to_string(), key: self.key_of(cmd), keywords: String::new() }, Action::Run(cmd)))
             .collect();
-        let line = |label: String, action: Action| (Choice { label, key: None }, action);
+        let line = |label: String, action: Action| (Choice { label, key: None, keywords: String::new() }, action);
         for (i, name) in self.engine.sheet_names().iter().enumerate() {
             if i as u32 != self.sheet || self.settings {
                 lines.push(line(format!("Go to sheet {name}"), Action::Sheet(i as u32)));

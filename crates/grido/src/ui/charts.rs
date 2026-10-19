@@ -33,7 +33,7 @@ impl GridoApp {
                 ui.horizontal(|ui| {
                     ui.label("Fill");
                     let mut colour = Some(rgb(self.cf.fill));
-                    if ui.add(ColorButton::new(&mut colour, glyph("fill-color"))).changed()
+                    if ui.add(ColorButton::new(&mut colour, glyph("fill-color")).tip("Fill colour")).changed()
                         && let Some(c) = colour
                     {
                         self.cf.fill = unrgb(c);
@@ -76,8 +76,8 @@ impl GridoApp {
             for (index, range, kind) in &rules {
                 ui.horizontal(|ui| {
                     ui.label(format!("{kind} — {range}"));
-                    let trash = Button::icon_only(glyph("trash")).quiet().small();
-                    if ui.add(trash).on_hover_text("Delete this rule").clicked() {
+                    let trash = Button::icon_only(glyph("trash")).quiet().small().tip("Delete this rule");
+                    if ui.add(trash).clicked() {
                         delete = Some(*index);
                     }
                 });

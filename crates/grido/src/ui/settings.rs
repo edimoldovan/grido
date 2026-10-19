@@ -20,8 +20,8 @@ impl GridoApp {
         CentralPanel::default().show(ctx, |ui| {
             ui.add_space(6.0);
             ui.horizontal(|ui| {
-                let back = Button::icon_only(glyph("back")).quiet();
-                if ui.add(back).on_hover_text("Back to the sheet  (Escape)").clicked() {
+                let back = Button::icon_only(glyph("back")).quiet().tip("Back to the sheet").hint("Escape");
+                if ui.add(back).clicked() {
                     self.settings = false;
                 }
                 ui.label(RichText::new("Settings").size(17.0).strong());

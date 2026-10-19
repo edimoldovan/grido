@@ -82,15 +82,13 @@ impl GridoApp {
 
                 // Cancel / enter buttons, between the name box and the formula.
                 if ui
-                    .add_enabled(editing_here, Button::icon_only(glyph("close")).quiet())
-                    .on_hover_text("Cancel  (Escape)")
+                    .add_enabled(editing_here, Button::icon_only(glyph("close")).quiet().tip("Cancel").hint("Escape"))
                     .clicked()
                 {
                     cancel = true;
                 }
                 if ui
-                    .add_enabled(editing_here, Button::icon_only(glyph("check")).quiet())
-                    .on_hover_text("Enter  (Enter)")
+                    .add_enabled(editing_here, Button::icon_only(glyph("check")).quiet().tip("Enter").hint("Enter"))
                     .clicked()
                 {
                     commit = Some(None);

@@ -443,8 +443,8 @@ impl GridoApp {
                 ui.horizontal(|ui| {
                     ui.label(RichText::new(name).strong());
                     ui.label(RichText::new(formula).weak());
-                    let trash = Button::icon_only(glyph("trash")).quiet().small();
-                    if ui.add(trash).on_hover_text("Delete this name").clicked() {
+                    let trash = Button::icon_only(glyph("trash")).quiet().small().tip("Delete this name");
+                    if ui.add(trash).clicked() {
                         delete = Some(name.clone());
                     }
                 });
@@ -584,7 +584,7 @@ impl GridoApp {
             ui.label("Colour");
             let recent: Vec<Color32> = self.recent_colors.iter().map(|c| rgb(*c)).collect();
             let mut colour = draft.font_color.map(rgb);
-            if ui.add(ColorButton::new(&mut colour, glyph("font-color")).clear("Automatic").recent(&recent)).changed() {
+            if ui.add(ColorButton::new(&mut colour, glyph("font-color")).clear("Automatic").recent(&recent).tip("Font colour")).changed() {
                 draft.font_color = colour.map(unrgb);
                 self.apply_color(false, draft.font_color);
             }
@@ -623,7 +623,7 @@ impl GridoApp {
         ui.horizontal(|ui| {
             ui.label("Colour");
             let mut colour = Some(rgb(draft.border_color));
-            if ui.add(ColorButton::new(&mut colour, glyph("fill-color"))).changed()
+            if ui.add(ColorButton::new(&mut colour, glyph("fill-color")).tip("Border colour")).changed()
                 && let Some(c) = colour
             {
                 draft.border_color = unrgb(c);
@@ -659,7 +659,7 @@ impl GridoApp {
         section(ui, "Fill");
         let recent: Vec<Color32> = self.recent_colors.iter().map(|c| rgb(*c)).collect();
         let mut colour = draft.fill.map(rgb);
-        if ui.add(ColorButton::new(&mut colour, glyph("fill-color")).clear("No fill").recent(&recent)).changed() {
+        if ui.add(ColorButton::new(&mut colour, glyph("fill-color")).clear("No fill").recent(&recent).tip("Fill colour")).changed() {
             draft.fill = colour.map(unrgb);
             self.apply_color(true, draft.fill);
         }
@@ -767,8 +767,12 @@ impl GridoApp {
                         }
                     });
                 }
-                let plus = Button::icon_only(glyph("plus")).quiet().small();
-                if ui.add(plus).on_hover_text(self.tip("New sheet", Command::NewSheet)).clicked()
+                let plus = Button::icon_only(glyph("plus"))
+                    .quiet()
+                    .small()
+                    .tip("New sheet")
+                    .hint(self.key_of(Command::NewSheet).unwrap_or_default());
+                if ui.add(plus).clicked()
                     && self.engine.new_sheet().is_ok()
                 {
                     switch = Some(names.len() as u32);

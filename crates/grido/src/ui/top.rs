@@ -27,18 +27,20 @@ impl GridoApp {
                     self.tools(ui, &mut cmds);
                 }
                 ui.with_layout(Layout::right_to_left(Align::Center), |ui| {
-                    let gear = Button::icon_only(glyph("gear")).quiet().selected(self.settings);
-                    if ui.add(gear).on_hover_text(self.tip("Settings", Command::Settings)).clicked() {
+                    let gear = Button::icon_only(glyph("gear"))
+                        .quiet()
+                        .selected(self.settings)
+                        .tip("Settings")
+                        .hint(self.key_of(Command::Settings).unwrap_or_default());
+                    if ui.add(gear).clicked() {
                         cmds.push(Command::Settings);
                     }
                     let keys = Button::icon_only(glyph("keyboard"))
                         .quiet()
-                        .selected(self.command_palette.is_open());
-                    if ui
-                        .add(keys)
-                        .on_hover_text(self.tip("Actions and keys", Command::Palette))
-                        .clicked()
-                    {
+                        .selected(self.command_palette.is_open())
+                        .tip("Actions and keys")
+                        .hint(self.key_of(Command::Palette).unwrap_or_default());
+                    if ui.add(keys).clicked() {
                         cmds.push(Command::Palette);
                     }
                 });
@@ -71,8 +73,7 @@ impl GridoApp {
         let mut fill = fmt.fill_color.map(rgb);
         let recent: Vec<Color32> = self.recent_colors.iter().map(|c| rgb(*c)).collect();
         let picked = ui
-            .add(ColorButton::new(&mut fill, glyph("fill-color")).clear("No fill").recent(&recent))
-            .on_hover_text("Fill colour")
+            .add(ColorButton::new(&mut fill, glyph("fill-color")).clear("No fill").recent(&recent).tip("Fill colour"))
             .changed();
         if picked {
             self.apply_color(true, fill.map(unrgb));
@@ -102,8 +103,12 @@ impl GridoApp {
     /// One tool: a quiet icon, marked while what it sets is set, its name and
     /// key in the tooltip.
     fn tool(&self, ui: &mut Ui, icon: &'static str, name: &str, cmd: Command, enabled: bool, cmds: &mut Vec<Command>) {
-        let button = Button::icon_only(glyph(icon)).quiet().selected(self.command_is_active(cmd));
-        if ui.add_enabled(enabled, button).on_hover_text(self.tip(name, cmd)).clicked() {
+        let button = Button::icon_only(glyph(icon))
+            .quiet()
+            .selected(self.command_is_active(cmd))
+            .tip(name)
+            .hint(self.key_of(cmd).unwrap_or_default());
+        if ui.add_enabled(enabled, button).clicked() {
             cmds.push(cmd);
         }
     }

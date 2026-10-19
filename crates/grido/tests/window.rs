@@ -114,6 +114,7 @@ fn every_screen_and_dialog_draws() {
         Command::ConditionalFormat,
         Command::InsertChart,
         Command::RenameSheet,
+        Command::TabColor,
         Command::ToggleFilter,
         Command::New,
     ] {

@@ -79,6 +79,7 @@ pub enum Dialog {
     NameManager,
     FormatCells,
     RenameSheet { sheet: u32, name: String },
+    TabColor { sheet: u32 },
     GotoCell,
     ConditionalFormat,
     Chart,

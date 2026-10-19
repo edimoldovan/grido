@@ -26,14 +26,15 @@ Omarchy theme's colours, the way Post is.
   — and at the far end the palette's button and the gear.
 - **The formula bar:** the name box, where typing a cell goes there, and the
   formula of the cell the keyboard is on.
-- **The sheet,** then its tabs — each in the colour it was given — and the
+- **The sheet,** then its tabs — each in the colour it was given, from the
+  tab's right-click menu or the palette's *Tab colour…* — and the
   status line: the workbook and its sheet, what just happened, the selection's
   sum, average and count, and the zoom.
-- **Settings,** from the gear: whether Claude may use Grido, and what it did.
+- **Settings,** from the gear or `Ctrl+,`: whether Claude may use Grido, and what it did.
 
 ## Every action, by name or by key
 
-`Ctrl+K` — or `F1`, or the keyboard button beside the gear — opens the
+`Ctrl+K` — or `Ctrl+/`, `F1`, or the keyboard button beside the gear — opens the
 palette: every action there is, found by typing, each with the key it is on,
 then the sheets to go to and the workbooks opened last. `↑` `↓` walk it,
 `Enter` runs one, `Esc` closes it.

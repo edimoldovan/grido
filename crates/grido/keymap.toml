@@ -110,4 +110,10 @@
 
 # --- Help ---
 "Ctrl+K" = "palette"
+"Ctrl+/" = "palette"
+# On layouts where "/" is a shifted key (Swedish: Shift+7), the same press
+# arrives with Shift on it.
+"Ctrl+Shift+/" = "palette"
 "F1" = "palette"
+# Settings, on the same key as in Post.
+"Ctrl+Comma" = "settings"

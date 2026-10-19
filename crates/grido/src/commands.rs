@@ -110,6 +110,7 @@ pub enum Command {
     PrevSheet,
     NewSheet,
     RenameSheet,
+    TabColor,
     DeleteSheet,
     DuplicateSheet,
     MoveSheetLeft,
@@ -123,7 +124,7 @@ pub enum Command {
 impl Command {
     /// Every command there is, in the order the palette lists them: what is
     /// done to a workbook first, then the sheets, then how to move.
-    pub const ALL: [Command; 97] = [
+    pub const ALL: [Command; 98] = [
         Command::New,
         Command::Open,
         Command::Save,
@@ -181,6 +182,7 @@ impl Command {
         Command::ZoomReset,
         Command::NewSheet,
         Command::RenameSheet,
+        Command::TabColor,
         Command::DuplicateSheet,
         Command::DeleteSheet,
         Command::MoveSheetLeft,
@@ -317,6 +319,7 @@ impl Command {
             "prev_sheet" => PrevSheet,
             "new_sheet" => NewSheet,
             "rename_sheet" => RenameSheet,
+            "tab_color" => TabColor,
             "delete_sheet" => DeleteSheet,
             "duplicate_sheet" => DuplicateSheet,
             "move_sheet_left" => MoveSheetLeft,
@@ -422,6 +425,7 @@ impl Command {
             PrevSheet => "Previous sheet",
             NewSheet => "New sheet",
             RenameSheet => "Rename sheet",
+            TabColor => "Tab colour…",
             DeleteSheet => "Delete sheet",
             DuplicateSheet => "Duplicate sheet",
             MoveSheetLeft => "Move sheet left",

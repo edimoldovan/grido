@@ -132,7 +132,15 @@ impl GridoApp {
             .filter(|(_, bound)| *bound == cmd)
             .map(|(shortcut, _)| shortcut)
             .min_by_key(|shortcut| worse(shortcut))
-            .map(|shortcut| shortcut.format(&names, false))
+            .map(|shortcut| {
+                // egui calls the slash and the comma Slash and Comma.
+                let text = shortcut.format(&names, false);
+                match shortcut.logical_key {
+                    eframe::egui::Key::Slash => text.replace("Slash", "/"),
+                    eframe::egui::Key::Comma => text.replace("Comma", ","),
+                    _ => text,
+                }
+            })
     }
 
     /// Tools light up when the active cell (or sheet) is already in that

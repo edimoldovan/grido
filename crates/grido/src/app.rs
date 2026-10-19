@@ -853,6 +853,7 @@ impl GridoApp {
                     self.switch_sheet(last);
                 }
             }
+            TabColor => self.dialog = Dialog::TabColor { sheet: self.sheet },
             RenameSheet => {
                 let name = self
                     .engine

@@ -1,7 +1,7 @@
 //! The dialogs, the AutoFilter's dialog, the sheet tabs and the status line.
 
 use eframe::egui::{self, Color32, Context, Key, RichText, ScrollArea, TopBottomPanel, Ui};
-use omarchy_kit::{Button, Checkbox, ColorButton, Dialog, Dropdown, NumberField, Slider, StatusLine, TextField, Toggle};
+use omarchy_kit::{Button, Checkbox, ColorButton, Dialog, Dropdown, NumberField, Slider, StatusLine, Swatches, TextField, Toggle};
 
 use crate::commands::Command;
 use crate::engine::{col_letters, parse_cell_ref, BorderTarget, HAlign, StyleEdit, VAlign};
@@ -153,6 +153,7 @@ impl GridoApp {
             Open::FindReplace => self.find_replace_dialog(ctx),
             Open::GotoCell => self.goto_dialog(ctx),
             Open::RenameSheet { sheet, name } => self.rename_dialog(ctx, sheet, name),
+            Open::TabColor { sheet } => self.tab_color_dialog(ctx, sheet),
             Open::Sort => self.sort_dialog(ctx),
             Open::NameManager => self.names_dialog(ctx),
             Open::FormatCells => self.format_dialog(ctx),
@@ -343,6 +344,32 @@ impl GridoApp {
             self.dialog = Open::None;
         } else {
             self.dialog = Open::RenameSheet { sheet, name };
+        }
+    }
+
+    /// The colour a sheet's tab is marked with, from the swatches; a pick
+    /// is applied at once and closes it.
+    fn tab_color_dialog(&mut self, ctx: &Context, sheet: u32) {
+        let recent: Vec<Color32> = self.recent_colors.iter().map(|c| rgb(*c)).collect();
+        let mut colour = self.engine.sheet_color(sheet).map(rgb);
+        let name = self.engine.sheet_names().get(sheet as usize).cloned().unwrap_or_default();
+        let mut picked = false;
+        let shown = Dialog::new(format!("Tab colour — {name}")).id_salt("grido-tab-colour").width(240.0).show(ctx, |ui| {
+            picked = ui
+                .add(Swatches::new(&mut colour).clear("No colour").recent(&recent).id_salt("grido-tab-swatches"))
+                .changed();
+        });
+        if picked {
+            // An empty string clears the tab colour in the engine.
+            let value = colour.map(|c| hex(unrgb(c))).unwrap_or_default();
+            let result = self.engine.set_sheet_color(sheet, &value);
+            self.report("Tab colour", result);
+            if let Some(c) = colour {
+                self.push_recent_color(unrgb(c));
+            }
+            self.dialog = Open::None;
+        } else if shown.closed {
+            self.dialog = Open::None;
         }
     }
 
@@ -691,6 +718,7 @@ impl GridoApp {
                 let names = self.engine.sheet_names();
                 let mut switch = None;
                 let mut rename: Option<(u32, String)> = None;
+                let mut tab_color: Option<u32> = None;
                 // (sheet to move, destination index)
                 let mut move_to: Option<(u32, u32)> = None;
                 for (i, name) in names.iter().enumerate() {
@@ -708,6 +736,10 @@ impl GridoApp {
                         let item = |ui: &mut Ui, label: &str| ui.add(Button::new(label).quiet().small()).clicked();
                         if item(ui, "Rename") {
                             rename = Some((idx, name.clone()));
+                            ui.close();
+                        }
+                        if item(ui, "Tab colour…") {
+                            tab_color = Some(idx);
                             ui.close();
                         }
                         if item(ui, "Duplicate") {
@@ -755,6 +787,9 @@ impl GridoApp {
                 }
                 if let Some((sheet, name)) = rename {
                     self.dialog = Open::RenameSheet { sheet, name };
+                }
+                if let Some(sheet) = tab_color {
+                    self.dialog = Open::TabColor { sheet };
                 }
             });
             ui.add_space(4.0);

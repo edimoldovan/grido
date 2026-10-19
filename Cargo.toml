@@ -1,0 +1,6 @@
+[workspace]
+members = [
+    "crates/grido",
+    "crates/grido-app",
+]
+resolver = "2"

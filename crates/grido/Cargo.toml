@@ -1,0 +1,18 @@
+[package]
+name = "grido"
+version = "0.1.0"
+edition = "2024"
+license-file = "../../LICENSE"
+authors = ["Eduard Moldovan"]
+description = "The Grido spreadsheet: engine, UI and its assistant tools"
+
+[dependencies]
+anyhow = "1.0.104"
+arboard = "3.6.1"
+eframe = "0.33.3"
+ironcalc = "0.8.3"
+omarchy-kit = { git = "https://github.com/edimoldovan/omarchy-kit.git", rev = "57c1c54ffff8c1c721ee094a91fb9e16a70ed2ec" }
+rfd = "0.17.2"
+serde = { version = "1.0.229", features = ["derive"] }
+serde_json = { version = "1.0.151", features = ["preserve_order"] }
+toml = "1.1.4"

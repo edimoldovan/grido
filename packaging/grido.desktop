@@ -1,0 +1,13 @@
+[Desktop Entry]
+Type=Application
+Name=Grido
+GenericName=Spreadsheet
+Comment=Your spreadsheets
+Exec=grido %f
+Icon=grido
+Terminal=false
+Categories=Office;Spreadsheet;
+MimeType=application/vnd.openxmlformats-officedocument.spreadsheetml.sheet;
+Keywords=spreadsheet;xlsx;table;
+StartupNotify=true
+StartupWMClass=grido

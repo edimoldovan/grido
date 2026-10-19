@@ -15,6 +15,15 @@ engine, and a set of tools Claude can work in it with.
 - `grido sales.xlsx` opens a workbook; a second launch hands the file to the
   window that is already open.
 
+Post, Grido and omarchy-kit are made together:
+
+- [**Post**](https://github.com/edimoldovan/post) — Gmail as a native window
+  on Linux, a command in the terminal, and tools for Claude.
+- [**Grido**](https://github.com/edimoldovan/grido) — a fast native
+  spreadsheet for `.xlsx` files, and tools for Claude.
+- [**omarchy-kit**](https://github.com/edimoldovan/omarchy-kit) — the egui
+  elements both apps are built from, in the Omarchy theme's colours.
+
 ## The window
 
 Drawn with [omarchy-kit](https://github.com/edimoldovan/omarchy-kit), in your

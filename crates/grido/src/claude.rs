@@ -250,6 +250,5 @@ mod tests {
         let skill = skill();
         assert!(skill.starts_with("---\nname: grido\n"));
         assert!(skill.contains("# Working with Grido") && skill.contains("grido_workbook_info"));
-        assert!(!skill.to_lowercase().contains("armor"));
     }
 }

@@ -24,6 +24,28 @@ Post, Grido and omarchy-kit are made together:
 - [**omarchy-kit**](https://github.com/edimoldovan/omarchy-kit) — the egui
   elements both apps are built from, in the Omarchy theme's colours.
 
+## Screens
+
+<img src="docs/budget.png" width="880" alt="A budget with formulas, a colour scale, coloured tabs and a chart">
+
+A budget: formulas, number formats, a colour scale on the totals, coloured sheet tabs, and a chart beside the figures.
+
+<img src="docs/palette.png" width="880" alt="The command palette, filtered by insert">
+
+Every action, found by typing: `Ctrl+K`.
+
+<img src="docs/format.png" width="880" alt="The Format cells dialog">
+
+Format cells.
+
+<img src="docs/clients.png" width="880" alt="The Clients sheet">
+
+Another sheet, by its tab.
+
+<img src="docs/settings.png" width="860" alt="Settings: whether Claude may use Grido">
+
+Settings: whether Claude may use Grido.
+
 ## The window
 
 Drawn with [omarchy-kit](https://github.com/edimoldovan/omarchy-kit), in your

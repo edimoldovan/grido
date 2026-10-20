@@ -10,6 +10,7 @@ pub mod app;
 pub mod claude;
 pub mod commands;
 pub mod engine;
+mod functions;
 pub mod mcp;
 pub mod keymap;
 pub mod state;

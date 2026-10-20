@@ -7,10 +7,13 @@ use std::io::BufWriter;
 use std::path::{Path, PathBuf};
 
 use anyhow::{anyhow, Result};
+use ironcalc::base::expressions::parser::ExpectedTokens;
 use ironcalc::base::expressions::types::Area;
 use ironcalc::base::types::{CellType, Color, HorizontalAlignment, VerticalAlignment};
 use ironcalc::base::UserModel;
 use ironcalc::export::save_xlsx_to_writer;
+
+use crate::functions::FUNCTIONS;
 use ironcalc::import::load_from_xlsx;
 
 /// Sheet limits, as the xlsx format defines them.
@@ -959,40 +962,21 @@ impl Engine {
 
     // ----- formulas -----
 
-    /// Function-name suggestions for a formula being typed.
+    /// Function-name suggestions for a formula being typed: where the engine
+    /// expects a function's name, the functions whose names start with what
+    /// is typed of it.
     pub fn completions(&mut self, sheet: u32, row: i32, col: i32, text: &str) -> Vec<String> {
         let cursor = text.chars().count();
-        let Ok(ctx) = self.um.formula_completion(sheet, row, col, text, cursor) else {
+        let Ok(context) = self.um.formula_completion(sheet, row, col, text, cursor) else {
             return Vec::new();
         };
-        let Ok(value) = serde_json::to_value(&ctx) else {
-            return Vec::new();
-        };
-        // The completion context shape varies by version; pull out any string
-        // list of candidate names we can find.
-        fn collect(v: &serde_json::Value, out: &mut Vec<String>) {
-            match v {
-                serde_json::Value::Array(items) => {
-                    for item in items {
-                        collect(item, out);
-                    }
-                }
-                serde_json::Value::Object(map) => {
-                    for (key, val) in map {
-                        if key == "name" || key == "text" || key == "label" {
-                            if let Some(s) = val.as_str() {
-                                out.push(s.to_string());
-                                continue;
-                            }
-                        }
-                        collect(val, out);
-                    }
-                }
-                _ => {}
+        let mut out: Vec<String> = Vec::new();
+        for expected in &context.expecting {
+            if let ExpectedTokens::FunctionName(typed) = expected {
+                let typed = typed.to_ascii_uppercase();
+                out.extend(FUNCTIONS.iter().filter(|name| name.starts_with(&typed)).map(|name| name.to_string()));
             }
         }
-        let mut out = Vec::new();
-        collect(&value, &mut out);
         out.sort();
         out.dedup();
         out.truncate(12);
@@ -1336,6 +1320,36 @@ pub fn parse_cell_ref(s: &str) -> Option<(i32, i32)> {
 #[cfg(test)]
 mod tests {
     use super::*;
+
+    /// A formula part-typed is offered the functions that start with it.
+    #[test]
+    fn a_function_name_part_typed_is_completed() {
+        let mut e = Engine::new().unwrap();
+        let offered = e.completions(0, 1, 1, "=SU");
+        assert!(offered.contains(&"SUM".to_string()) && offered.contains(&"SUMIF".to_string()), "{offered:?}");
+        assert!(offered.iter().all(|name| name.starts_with("SU")));
+        let offered = e.completions(0, 1, 1, "=1+av");
+        assert!(offered.contains(&"AVERAGE".to_string()), "lower case, after an operator: {offered:?}");
+        assert!(e.completions(0, 1, 1, "plain text").is_empty());
+    }
+
+    /// Every name offered is a function the engine evaluates: none of them
+    /// comes back as an unknown name.
+    #[test]
+    fn every_function_offered_is_known_to_the_engine() {
+        let mut e = Engine::new().unwrap();
+        e.set_input(0, 1, 1, "=NOSUCHFUNCTION()").unwrap();
+        assert_eq!(e.display(0, 1, 1), "#NAME?", "an unknown name says so");
+        let unknown: Vec<&str> = FUNCTIONS
+            .iter()
+            .copied()
+            .filter(|name| {
+                e.set_input(0, 1, 1, &format!("={name}()")).unwrap();
+                e.display(0, 1, 1) == "#NAME?"
+            })
+            .collect();
+        assert!(unknown.is_empty(), "unknown to the engine: {unknown:?}");
+    }
 
     #[test]
     fn a1_parsing() {

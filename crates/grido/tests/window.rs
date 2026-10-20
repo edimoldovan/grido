@@ -181,3 +181,38 @@ fn a_narrow_window_keeps_the_far_end() {
     assert_eq!(ends.len(), 2, "both are drawn");
     assert!(ends.iter().all(|&right| right <= 640.0), "inside the window: {ends:?}");
 }
+
+/// In a window with room for it, Format cells shows all it holds: its last
+/// control sits inside its card, not scrolled out of sight.
+#[test]
+fn the_format_dialog_shows_all_it_holds() {
+    use eframe::egui::accesskit::Role;
+    let ctx = Context::default();
+    ctx.enable_accesskit();
+    let mut app = GridoApp::new(None);
+    app.claude = Some(false);
+    let mut border = None;
+    for i in 0..6 {
+        if i == 1 {
+            app.exec(grido::commands::Command::FormatDialog, &ctx);
+        }
+        let input = RawInput {
+            screen_rect: Some(Rect::from_min_size(Pos2::ZERO, Vec2::new(1180.0, 860.0))),
+            ..RawInput::default()
+        };
+        let out = ctx.run(input, |ctx| app.frame(ctx));
+        if let Some(update) = out.platform_output.accesskit_update {
+            border = update
+                .nodes
+                .iter()
+                .find(|(_, node)| node.role() == Role::Button && node.label() == Some("Border colour"))
+                .and_then(|(_, node)| node.bounds())
+                .or(border);
+        }
+    }
+    let card = ctx
+        .memory(|m| m.area_rect(Id::new(("omarchy-kit-dialog", "Format cells".to_string()))))
+        .expect("the dialog is up");
+    let border = border.expect("the border colour is drawn");
+    assert!(border.y1 as f32 <= card.bottom(), "inside the card: {border:?} {card:?}");
+}

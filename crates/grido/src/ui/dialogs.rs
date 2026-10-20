@@ -512,7 +512,10 @@ impl GridoApp {
         let mut draft = draft.expect("draft is set above");
 
         let shown = Dialog::new("Format cells").width(440.0).show(ctx, |ui| {
-            ScrollArea::vertical().max_height(ctx.content_rect().height() * 0.7).show(ui, |ui| {
+            // As tall as what it holds, up to seven tenths of the window; it
+            // scrolls only beyond that.
+            let tallest = ctx.content_rect().height() * 0.7;
+            ScrollArea::vertical().max_height(tallest).min_scrolled_height(tallest).show(ui, |ui| {
                 self.format_number(ui, &mut draft);
                 self.format_font(ui, &mut draft);
                 self.format_alignment(ui, &mut draft);

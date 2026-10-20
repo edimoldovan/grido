@@ -149,3 +149,35 @@ fn a_formula_can_be_typed() {
     frame(&ctx, &mut app, vec![key(egui::Key::Enter)]);
     frame(&ctx, &mut app, vec![]);
 }
+
+/// In a narrow window the tools that do not fit give way: the palette's
+/// button and the gear stay at the far end, inside the window.
+#[test]
+fn a_narrow_window_keeps_the_far_end() {
+    use eframe::egui::accesskit::Role;
+    let ctx = Context::default();
+    ctx.enable_accesskit();
+    let mut app = GridoApp::new(None);
+    app.claude = Some(false);
+    let mut ends = Vec::new();
+    for _ in 0..3 {
+        let input = RawInput {
+            screen_rect: Some(Rect::from_min_size(Pos2::ZERO, Vec2::new(640.0, 600.0))),
+            ..RawInput::default()
+        };
+        let out = ctx.run(input, |ctx| {
+            let _ = app.top_bar(ctx);
+        });
+        if let Some(update) = out.platform_output.accesskit_update {
+            ends = update
+                .nodes
+                .iter()
+                .filter(|(_, node)| node.role() == Role::Button)
+                .filter(|(_, node)| matches!(node.label(), Some("Settings" | "Actions and keys")))
+                .filter_map(|(_, node)| node.bounds().map(|b| b.x1))
+                .collect();
+        }
+    }
+    assert_eq!(ends.len(), 2, "both are drawn");
+    assert!(ends.iter().all(|&right| right <= 640.0), "inside the window: {ends:?}");
+}
